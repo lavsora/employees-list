@@ -3,37 +3,18 @@ import { useState } from 'react';
 import './employees-add-form.css'
 
 const EmployeesAddForm = (props) => {
-    const [inputValue, setInputValue] = useState({
-        name: '',
-        salary: ''
-    })
-
-    const onValueChange = (e) => {
-        if(e.currentTarget.name === 'name') {
-            setInputValue({
-                name: e.target.value,
-                salary: inputValue.salary
-            })
-        }
-
-        if(e.currentTarget.name === 'salary') {
-            setInputValue({
-                name: inputValue.name,
-                salary: e.target.value
-            })
-        }
-        
-    }
+    const [inputValueName, setInputValueName] = useState({ name: '' })
+    const [inputValueSalary, setInputValueSalary] = useState({ salary: '' })
 
     const submitValue = (e) => {
         e.preventDefault()
 
-        props.onAdd(inputValue)
+        const item = Object.assign(inputValueName, inputValueSalary)  
 
-        setInputValue({
-            name: '',
-            salary: ''
-        })
+        props.onAdd(item)
+
+        setInputValueName({ name: '' })
+        setInputValueSalary({ salary: '' })
     }
 
     return (
@@ -45,14 +26,14 @@ const EmployeesAddForm = (props) => {
                     className="form-control new-post-label"
                     placeholder="Как его зовут?"
                     name='name'
-                    value={inputValue.name}
-                    onChange={onValueChange} />
+                    value={inputValueName.name}
+                    onChange={(e) => setInputValueName({ [e.target.name]: e.target.value })} />
                 <input type="number"
                     className="form-control new-post-label"
                     placeholder="З/П в $?"
                     name='salary'
-                    value={inputValue.salary}
-                    onChange={onValueChange} />
+                    value={inputValueSalary.salary}
+                    onChange={(e) => setInputValueSalary({ [e.target.name]: e.target.value })} />
 
                 <button type="submit"
                     className="btn btn-outline-light">Добавить</button>
