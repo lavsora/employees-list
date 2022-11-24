@@ -8,7 +8,7 @@ import EmployeesAddForm from '../employees-add-form/employees-add-form';
 
 import './app.css';
 
-const App = (props) => {
+const App = () => {
     const [data, setData] = useState([
         { name: 'Иван Иваныч', salary: 800, increase: false, id: 1, like: false },
         { name: 'Петр Петрович', salary: 3000, increase: true, id: 2, like: false },
