@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 
 import AppInfo from '../app-info/app-info';
 import SearchPanel from '../search-panel/search-panel';
@@ -8,49 +8,36 @@ import EmployeesAddForm from '../employees-add-form/employees-add-form';
 
 import './app.css';
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            data: [
-                { name: 'Иван Иваныч', salary: 800, increase: false, id: 1, like: false },
-                { name: 'Петр Петрович', salary: 3000, increase: true, id: 2, like: false },
-                { name: 'Александр Саныч', salary: 5000, increase: false, id: 3, like: false },
-            ],
-            term: '',
-            filter: 'all',
-            maxId: 4
-        }
+const App = (props) => {
+    const [data, setData] = useState([
+        { name: 'Иван Иваныч', salary: 800, increase: false, id: 1, like: false },
+        { name: 'Петр Петрович', salary: 3000, increase: true, id: 2, like: false },
+        { name: 'Александр Саныч', salary: 5000, increase: false, id: 3, like: false },
+    ])
+    const [term, setTerm] = useState('')
+    const [filter, setFilter] = useState('all')
+    const [maxId, setMaxId] = useState(4)
+
+    const deleteItem = (id) => {
+        setData(data.filter(item => item.id !== id))
     }
 
-    deleteItem = (id) => {
-        this.setState(({ data }) => ({
-            data: data.filter(item => item.id !== id)
+    const addItem = (item) => {
+        setData([...data, { ...item, increase: false, id: maxId, like: false }])
+        setMaxId(maxId + 1)
+    }
+
+    const onToggleProp = (id, prop) => {
+        setData(data.map(item => {
+            if (item.id === id) {
+                return { ...item, [prop]: !item[prop] }
+            }
+            return item;
         }))
     }
 
-    addItem = (item) => {
-        const { data, maxId } = this.state
-
-        this.setState({
-            data: [...data, { ...item, increase: false, id: maxId, like: false }],
-            maxId: maxId + 1
-        })
-    }
-
-    onToggleProp = (id, prop) => {
-        this.setState(({data}) => ({
-            data: data.map(item => {
-                if(item.id === id) {
-                    return {...item, [prop]: !item[prop]}
-                }
-                return item;
-            })
-        }))
-    }
-
-    searchEmployees = (items, term) => {
-        if(term.length === 0) {
+    const searchEmployees = (items, term) => {
+        if (term.length === 0) {
             return items
         }
 
@@ -59,13 +46,13 @@ class App extends Component {
         })
     }
 
-    onUpdateSearch = (term) => {
-        this.setState({term})
+    const onUpdateSearch = (term) => {
+        setTerm(term)
     }
 
-    filterPost = (items, filter) => {
+    const filterPost = (items, filter) => {
         switch (filter) {
-            case 'like': 
+            case 'like':
                 return items.filter(item => item.like)
             case 'moreThen1000':
                 return items.filter(item => item.salary > 1000)
@@ -74,31 +61,28 @@ class App extends Component {
         }
     }
 
-    onFilterSelect = (filter) => {
-        this.setState({filter})
+    const onFilterSelect = (filter) => {
+        setFilter(filter)
     }
 
-    render() {
-        const { data, term, filter } = this.state
-        const visibleData = this.filterPost(this.searchEmployees(data, term), filter)
+    const visibleData = filterPost(searchEmployees(data, term), filter)
 
-        return (
-            <div className='app'>
-                <AppInfo employees={data.length}
-                increased={data.filter(item => item.increase).length}/>
+    return (
+        <div className='app'>
+            <AppInfo employees={data.length}
+                increased={data.filter(item => item.increase).length} />
 
-                <div className='search-panel'>
-                    <SearchPanel onUpdateSearch={this.onUpdateSearch}/>
-                    <AppFilter filter={this.state.filter} onFilterSelect={this.onFilterSelect}/>
-                </div>
-
-                <EmployeesList data={visibleData} 
-                onDelete={this.deleteItem} 
-                onToggleProp={this.onToggleProp}/>
-                <EmployeesAddForm onAdd={this.addItem} />
+            <div className='search-panel'>
+                <SearchPanel onUpdateSearch={onUpdateSearch} />
+                <AppFilter filter={filter} onFilterSelect={onFilterSelect} />
             </div>
-        )
-    }
+
+            <EmployeesList data={visibleData}
+                onDelete={deleteItem}
+                onToggleProp={onToggleProp} />
+            <EmployeesAddForm onAdd={addItem} />
+        </div>
+    )
 }
 
 export default App;

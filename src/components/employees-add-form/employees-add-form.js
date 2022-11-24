@@ -9,9 +9,20 @@ const EmployeesAddForm = (props) => {
     })
 
     const onValueChange = (e) => {
-        setInputValue({
-            [e.target.name]: e.target.value
-        })
+        if(e.currentTarget.name === 'name') {
+            setInputValue({
+                name: e.target.value,
+                salary: inputValue.salary
+            })
+        }
+
+        if(e.currentTarget.name === 'salary') {
+            setInputValue({
+                name: inputValue.name,
+                salary: e.target.value
+            })
+        }
+        
     }
 
     const submitValue = (e) => {
